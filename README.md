@@ -23,12 +23,12 @@ You can either load everything with the load.lisp file:
 `(load "load.lisp")`
 If you need to load the files from a specific location, you can`defvar`
 `*islisp-compat-root*` to the project's root directory before loading.
-Thereis also another `defvar`ed variable: `*islisp-compat-muffle-warnings*`,
+There is also another `defvar`ed variable: `*islisp-compat-muffle-warnings*`,
 which muffles all warnings when loading if it is true.
 
 Alternately, if ASDF is available, you can run:
 ```
-(require :asdf)`
+(require :asdf)
 (push "path/to/islisp-compat/" asdf:*central-registry*)
 (asdf:load-system :islisp-compat)
 ```
@@ -229,9 +229,10 @@ The reader is very configurable. The main entry point to the reader is `islisp-s
 
 There is a `islisp-sys:*default-reader-options*` global variable that
 provides the default behavior of the reader. This can be overwriten by
-the fucntion call below, or modified with one of the
-`reader-options-`* functions.
-`(islisp-sys:make-islisp-reader-options
+the function call below, or modified with one of the
+`reader-options-`* functions corresponding to any of the initargs below.
+```
+(islisp-sys:make-islisp-reader-options
   :eof-error-p  ; t or nil
   :eof-value  ; any value
   :neutral-alphabetic-case  ; one of: :upcase, :downcase
@@ -242,7 +243,8 @@ the fucntion call below, or modified with one of the
   :keyword-behavior  ; one of: :cl, :symbol
   :symbol-colon-behavior  ; one of: :cl, :symbol, :error
   :allowed-character-names  ; a list of strings
-  )`
+  )
+```
 
 The `eos-error-p` and `eos-value` slots are the same as the parameters to `read`: `eos-error-p` specifies whether you want the reader to error on end-of-stream, `eos-value` is the value returned if `eos-error-p` is nil. You don't need to set these direcly if you are calling `islisp-read`, only if calling `read-form`.
 
