@@ -748,20 +748,23 @@
   ;; NOTE: There is not a specific class for an output-stream
   (if (not (output-stream-p output-stream))
       (islisp-sys:signal-domain-error output-stream (class <stream>))
-      (cl:write-char char output-stream)))
+      (cl:write-char char output-stream))
+  nil)
 
 (defun format-float (output-stream float)
   (assure <float> float)
   ;; NOTE: There is not a specific class for an output-stream
   (if (not (output-stream-p output-stream))
       (islisp-sys:signal-domain-error output-stream (class <stream>))
-      (cl:princ float output-stream)))
+      (cl:princ float output-stream))
+  nil)
 
 (defun format-fresh-line (output-stream)
   ;; NOTE: There is not a specific class for an output-stream
   (if (not (output-stream-p output-stream))
       (islisp-sys:signal-domain-error output-stream (class <stream>))
-      (cl:format output-stream "~&")))
+      (cl:format output-stream "~&"))
+  nil)
 
 (defun format-integer (output-stream integer radix)
   (assure <integer> integer)
@@ -770,7 +773,8 @@
       (islisp-sys:signal-domain-error output-stream (class <stream>))
       (cl:format output-stream
                  (cl:format nil "~~~DR" radix)
-                 integer)))
+                 integer))
+  nil)
 
 (defun format-object (output-stream object escape-p)
   ;; NOTE: There is not a specific class for an output-stream
@@ -779,14 +783,16 @@
       ;; TODO: pretty print '(quote) and `(quasiquote)
       (if escape-p
           (cl:prin1 object output-stream)
-          (cl:princ object output-stream))))
+          (cl:princ object output-stream)))
+  nil)
 
 (defun format-tab (output-stream column)
   ;; NOTE: There is not a specific class for an output-stream
   (if (not (output-stream-p output-stream))
       (islisp-sys:signal-domain-error output-stream (class <stream>))
       (cl:format output-stream
-                 (cl:format nil "~~~DT" column))))
+                 (cl:format nil "~~~DT" column)))
+  nil)
 
 (defun format (output-stream format-string &rest objs)
   (assure <stream> output-stream)
@@ -800,7 +806,8 @@
   (let ((fmt (islisp-sys:validate-format-string format-string objs)))
     (if (stringp fmt)
         (apply #'cl:format output-stream fmt objs)
-        (islisp-sys:signal-program-error 'format fmt))))
+        (islisp-sys:signal-program-error 'format fmt)))
+  nil)
 
 ;;; Binary I/O
 
