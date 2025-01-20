@@ -425,7 +425,9 @@ Can error on incorrect types."
 (defun symbol-start-char-p (ch)
   "Test for the valid starting characters for an unescaped symbol."
   (or (alpha-char-p ch)
-      (find ch "<>/*=?_!$%[]^{}~")))
+      ;; NOTE: & is not in the list of valid starting characters in the
+      ;; standard, but is needed here to handle &rest correctly.
+      (find ch "<>/*=?_!$%[]^{}~&")))
 
 (defun read-symbol (stream options)
   "Read a symbol from the stream. Is called before any character is read. Assumes (symbol-start-char-p (preview-char stream)) is true. Can be used by itself."
