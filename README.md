@@ -20,14 +20,16 @@ Start up your favorite Common Lisp implementation and do one of the
 following in its REPL:
 
 You can either load everything with the load.lisp file:
-`(load "load.lisp")`
-If you need to load the files from a specific location, you can`defvar`
-`*islisp-compat-root*` to the project's root directory before loading.
+```lisp
+(load "load.lisp")
+```
+If you need to load the files from a specific location, you can `defvar
+*islisp-compat-root*` to the project's root directory before loading.
 There is also another `defvar`ed variable: `*islisp-compat-muffle-warnings*`,
 which muffles all warnings when loading if it is true.
 
 Alternately, if ASDF is available, you can run:
-```
+```lisp
 (require :asdf)
 (push "path/to/islisp-compat/" asdf:*central-registry*)
 (asdf:load-system :islisp-compat)
@@ -231,7 +233,7 @@ There is a `islisp-sys:*default-reader-options*` global variable that
 provides the default behavior of the reader. This can be overwriten by
 the function call below, or modified with one of the
 `reader-options-`* functions corresponding to any of the initargs below.
-```
+```lisp
 (islisp-sys:make-islisp-reader-options
   :eof-error-p  ; t or nil
   :eof-value  ; any value
@@ -267,18 +269,18 @@ The `symbol-colon-behavior` option specifies what the reader should do upon enco
 * `:symbol` tells the reader to treat a colon like any other character. Thus, `cl:list` does not denote the `list` symbol in the `CL` package, but the symbol `cl\:list`.
 * `:error` disables colon support entirely and reading in any symbol with a colon will signal an error.
 
-## Extensions from the ISLisp Specification
+## Extensions to the ISLisp Specification
 
 There is a `<violation>` error class that handles the majority of the
 syntax errors in special forms. You should only really see this error at
 compile time. This is allowed by the spec. and matches the behavior of TISL.
 
-There is a `<sequence>` class that matches the Common Lisp `cl:sequence` which
-`<list>` and `<basic-vector` are both considered to inherit from.
+There is a `<sequence>` class that matches the Common Lisp `cl:sequence`
+class which `<list>` and `<basic-vector>` are both considered to inherit from.
 This was primarily added so the `<domain-error>`s signalled from the
 sequence functions have a useful class to report.
 
-There is a `<class>` class that matches the Common Lisp `cl:class` which
+There is a `<class>` class that matches the Common Lisp `cl:class` class which
 `built-in-class` and `standard-class` are both considered to inherit from.
 This was primarily added so the `<domain-error>`s signalled from the
 type checking functions have a useful class to report.
@@ -299,22 +301,22 @@ few.
 The `parse-number` function doesn't indicate that it ignores whitespace like the `parse-integer` function from Common Lisp does. We signal a `<parse-error>` on leading or trailing whitespace.
 
 The standard doesn't say what, if any, error should be signalled if
-the `read` function fails. (Right now we signal `<simple-error>`s).
+the `read` function fails. (Right now we signal `<simple-error>`s.)
 
-The standard doesn't saw what type of error should be signalled for an
+The standard doesn't say what type of error should be signalled for an
 improper call to `convert`. We signal a `<domain-error>` like TISL and OpenLisp.
 
 For `open-input-file`, etc. despite the element class being able to be
 either `<character>` or an integer, the `<domain-error>` it signals
-has `<integer>` as its expected class (this matched TISL).
+has `<integer>` as its expected class (this matches TISL).
 
 For `open-output-file`, `with-output-file`, etc. the specification
 doesn't say what to do if the file exists. We pass `:if-exists
 :supersede` to the implementation's `cl:open`. If you need some other
-behavior, you will need to test its existence with `probe-file` yourself.
+behavior, you will need to test for its existence with `probe-file` yourself.
 
 For the `format-`* functions and `write-byte`, if a `<domain-error>` is
-signalled with the expected class set to `<stream>` but you passed a stream to it,
+signalled with the expected class set to `<stream>`, but you passed a stream to it,
 the issue is that the stream is not open for output.
 
 For the `read-`* functions, if a `<domain-error>` is signalled with
