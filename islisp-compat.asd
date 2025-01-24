@@ -1,6 +1,6 @@
 ;;;; -*- Mode:Lisp; indent-tabs-mode:nil -*-
 ;;;; islisp-compat.asd
-;;;; Copyright (c) 2011-2024 Derek Newhall
+;;;; Copyright (c) 2011-2025 Derek Newhall
 ;;;;
 ;;;; The ASDF system definition.
 ;;;;

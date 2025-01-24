@@ -1,6 +1,6 @@
 ;;;; -*- Mode:Lisp; indent-tabs-mode:nil -*-
 ;;;; load.lisp
-;;;; Copyright (c) 2011-2024 Derek Newhall
+;;;; Copyright (c) 2011-2025 Derek Newhall
 ;;;;
 ;;;; Simply loads in all the files using LOAD, which is useful
 ;;;; in certain circumstances (like a munged ASDF registry).

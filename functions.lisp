@@ -1,6 +1,6 @@
 ;;;; -*- Mode:Lisp; indent-tabs-mode:nil -*-
 ;;;; islisp-functions.lisp
-;;;; Copyright (c) 2011-2024 Derek Newhall
+;;;; Copyright (c) 2011-2025 Derek Newhall
 ;;;; SPDX-License-Identifier: CDDL-1.1
 ;;;;
 ;;;; This file contains all the function definitions for ISLisp
