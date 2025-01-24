@@ -309,6 +309,9 @@ Whitespace is defined as space, tab, newline, and return."
            (read-char stream nil nil)))
       ((null ch)
        (%reader-error options "End of stream before end of string."))
+    ;; Increment line number for any embedded newlines.
+    (when (char= ch #\Linefeed)
+      (incf (reader-options-line-num options)))
     (cond (escaped
            (push-char ch str)
            (setq escaped nil))
