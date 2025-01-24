@@ -417,15 +417,66 @@ NOTE: does not trim any whitespace."
   #+lispworks (lispworks:quit :status status)
   )
 
-(defun islisp-import (&rest symbols)
-"Imports functions from one package into ISLISP-USER.
+(defvar *default-helper-functions*
+  '(exit import))
+
+(defvar *standard-helper-functions*
+  '(load eval macroexpand macroexpand-1 fboundp apropos))
+
+(defvar *imported-symbols*
+  '())
+
+(defun import (&rest symbols)
+  "Imports functions from one package into ISLISP-USER. Takes any number of
+symbols or lists of symbols (which it flattens).
+Understands :standard-helpers to mean the list of symbols in
+*standard-helper-functions*.
+Passing :clear as the first argument clears (uninterns) all the imported
+symbols. Any symbols passed after the :clear are then imported.
+Passing :clear-all clears (uninterns) all the imported symbols, plus the
+functions exit and import itself (use islisp-sys:import to add them back).
 Example: (islisp-sys:import 'cl:load 'cl:eval)"
-  (dolist (symbol (cond ((not (listp symbols)) ; (import 'cl:foo)
-                         (list symbols))
-                        ((listp (car symbols)) ; (import (list 'cl:foo 'cl:bar))
-                         (car symbols))
-                        (t ; (import 'cl:foo 'cl:bar)
-                         symbols)))
-    (let ((islisp-symbol (intern (symbol-name symbol)
-                                 (find-package '#:islisp-user))))
-      (setf (symbol-function islisp-symbol) (symbol-function symbol)))))
+  (when symbols
+    (let ((symbol-list '())
+          (islisp-package (find-package :islisp))
+          (package (find-package :islisp-user)))
+      ;; Check for :clear and :clear-all.
+      (when (or (eq (car symbols) :clear)
+                (eq (car symbols) :clear-all))
+        (dolist (symbol (if (eq (car symbols) :clear-all)
+                            (append *default-helper-functions*
+                                    *imported-symbols*)
+                            *imported-symbols*))
+          (unintern symbol package))
+        (setq *imported-symbols* '())
+        (setq symbols (cdr symbols)))
+      ;; Flatten any sublists in symbols.
+      (labels ((flatten (sym)
+                 (cond ((consp sym)
+                        (flatten (car sym))
+                        (flatten (cdr sym)))
+                       ((keywordp sym)
+                        (ecase sym
+                          (:standard-helpers
+                           (flatten *default-helper-functions*)
+                           (flatten *standard-helper-functions*))))
+                       (t
+                        (push sym symbol-list)))))
+        (flatten symbols)
+        (setq symbol-list (nreverse symbol-list))
+        ;; Import the actual symbols.
+        (dolist (symbol symbol-list)
+          (when symbol
+            ;; If from the :islisp or :islisp-user packages (but not
+            ;; :islisp-sys!), import from :common-lisp-user instead.
+            (let* ((symbol-package (symbol-package symbol))
+                   (resolved-symbol (if (or (eq symbol-package package)
+                                            (eq symbol-package islisp-package))
+                                        (find-symbol (symbol-name symbol) :cl-user)
+                                        symbol))
+                   (islisp-symbol (intern (symbol-name resolved-symbol) package)))
+              ;; Copy function definition.
+              (setf (symbol-function islisp-symbol)
+                    (symbol-function resolved-symbol))
+              ;; Add to imported symbols list.
+              (push symbol *imported-symbols*))))))))

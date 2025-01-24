@@ -17,16 +17,14 @@
            #:fix-slot-spec #:fix-method-parameter-profile
            #:validate-format-string #:valid-number-p
            #:validate-function-list #:validate-variable-list
-           ;; set-ref support
-           #:set-aref1 #:set-aref2 #:set-aref3 #:set-aref4
-           #:set-aref5 #:set-aref6 #:set-aref7 #:set-aref8
-           #:set-aref9 #:set-aref10 #:set-aref
+           #:set-aref
            ;; Errors
            #:<violation> #:violation
            #:signal-domain-error #:signal-program-error
 	   #:signal-control-error #:assert-arity #:assure-identifier
            ;; Exported utility functions
-           #:exit #:host-implementation-feature #:islisp-import #:read-new-value
+           #:host-implementation-feature #:read-new-value
+           #:exit #:import #:*standard-helper-functions*
            ;; Backquote expansion/evaluation
            #:bq-completely-process #:bq-process
            ;; Reader
@@ -46,13 +44,13 @@
            #:reader-options-keyword-behavior
            #:reader-options-symbol-colon-behavior
            #:reader-options-allowed-character-names
-           ))
+           )
+  (:shadow #:import))
 
 (defpackage :islisp
   ;#+sbcl (:lock t)
   (:import-from :common-lisp
 		#:t #:nil #:quote #:&rest #:function)
-                ;#:lambda)
   (:export      ;; Symbols
                 #:&rest #:standard
                 ;; Quasiquote
@@ -287,8 +285,5 @@
 
 (defpackage #:islisp-user
   (:use :islisp)
-  ;(:import-from :common-lisp)
-                ;#:macroexpand #:macroexpand-1
-                ;#:fboundp #:eval #:load)
   (:import-from :islisp-sys
-                #:exit #:islisp-import))
+                #:exit #:import))

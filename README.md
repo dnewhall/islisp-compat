@@ -286,7 +286,27 @@ This was primarily added so the `<domain-error>`s signalled from the
 type checking functions have a useful class to report.
 
 There is an `exit` function in the `islisp-sys` package that will quit
-the most common Common Lisp implementations.
+the most common Common Lisp implementations. This is imported into
+`islisp-user`.
+
+There is an `import` function in the `islisp-sys` package that will import
+a symbol and its function definition (but not any variable value) into
+the `islisp-user` package (if the symbol is from the `islisp` or `islisp-user`
+package already, it is imported from `common-lisp-user`).
+`import` takes any number of symbols or lists (any lists passed are flattened into
+just symbols). If any symbol is `:standard-helpers`, then `cl:eval`,
+`cl:load`, `cl:fboundp`, `cl:macroexpand`, `cl:macroexpand-1`, and `cl:apropos`.
+are imported. If the first symbol is `:clear`, then all the already imported symbols
+will be cleared (uninterned), with any symbols following the `:clear` then imported.
+If the first symbol is `:clear-all`, then all the already imported symbols, plus
+`exit` and `import` will be cleared (calling `import` is still possible by prefixing
+it with the package name: `islisp-sys:import`).
+
+There is finally an `import-helpers` function that will import the following
+commonly used functions: `cl:load`, `cl:eval`, `cl:fboundp`, `cl:macroexpand`,
+and `cl:macroexpand-1` into `islisp-user`. These are not imported by default
+so a user can implement their own versions of those functions (i.e. implement
+`load` and `eval` as a native ISLisp interpreter).
 
 The following options to defining forms don't check their parameters to allow some access to the underlying implementation: `:generic-function-class`, `:method-combination`, `:metaclass`
 
