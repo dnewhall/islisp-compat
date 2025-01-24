@@ -12,7 +12,7 @@
   (:export ;; Class accessors
            #:cl-class-name #:cl-class
            ;; Fix ISLisp-specific things
-           #:fix-lambda-list #:fix-global-name :fix-dynamic-name
+           #:fix-lambda-list #:fix-global-name #:fix-dynamic-name
            #:dynamic-var-p #:islisp-keyword-p #:identifierp
            #:fix-slot-spec #:fix-method-parameter-profile
            #:validate-format-string #:valid-number-p

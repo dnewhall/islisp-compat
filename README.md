@@ -152,10 +152,10 @@ however, is that `cl:boundp` will not work for `defglobal`ed variables.
 Dynamic global variables are simply implemented using `defparameter`.
 However, to allow the variables to peacefully coexist with `defglobal`
 and local bindings, all dynamic variables in `islisp-compat` are
-prefixed with `%dynamic-`. Thus, `(defdynamic *print-level* 0)` would create a global special variable named `%dynamic-*print-level*`.
+prefixed with `%%dynamic-`. Thus, `(defdynamic *print-level* 0)` would create a global special variable named `%%dynamic-*print-level*`.
 
 This means:
-1) for the love of all that's holy, don't name a global variable `%dynamic-something`,
+1) for the love of all that's holy, don't name a global variable `%%dynamic-something`,
 2) if you need to access these variables in Common Lisp code, you really should use the `islisp:dynamic` or `islisp:dynamic-let` special forms.
 
 ## Implementation defined/dependent behavior

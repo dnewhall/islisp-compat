@@ -132,18 +132,25 @@ the bounds of minlegnth and maxlength."
 
 ;;; Fix various ISLisp-specific things
 
+(defun fix-global-name (name)
+  (gensym (symbol-name name)))
+
+(defconstant +dynamic-prefix+
+  '%%dynamic-)
+
 (defun fix-dynamic-name (name &optional (package (find-package '#:islisp-user)))
   "Takes a symbol and returns a mangled name for use in ISLisp."
-  (let ((dynamic-name (concatenate 'string (symbol-name '%DYNAMIC-)
+  (let ((dynamic-name (concatenate 'string (symbol-name +dynamic-prefix+)
                                            (symbol-name name))))
     (intern dynamic-name package)))
 
 (defun dynamic-var-p (sym)
   "Predicate for whether a symbol is an ISLisp dynamic variable."
   ;; This check used to be more complicated...
-  (let ((name (symbol-name sym)))
-    (and (> (length name) 9)
-         (string= (subseq name 0 9) "%DYNAMIC-")
+  (let ((name (symbol-name sym))
+        (dynamic (symbol-name +dynamic-prefix+)))
+    (and (> (length name) (length dynamic))
+         (string= name dynamic :start1 0 :end1 (length dynamic))
          (boundp sym))))
 
 (defun param-eq (param symbol)

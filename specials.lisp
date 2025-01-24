@@ -37,11 +37,11 @@
 
 (defmacro defglobal (name form)
   (islisp-sys:assure-identifier name `(defglobal ,name ,form))
-  (let ((global-name (cl:gensym (cl:symbol-name name))))
+  (let ((global-name (islisp-sys:fix-global-name name)))
     `(progn
        ;; Need to use a symbol macro to allow lexical binding to work.
        ;; SBCL and others don't allow lexical globals to be shadowed,
-       ;; so we don't use their SB-EXT:DEFGLOBAL, CCL:DEFGLOGAL, etc.
+       ;; so we don't use their SB-EXT:DEFGLOBAL, CCL:DEFGLOBAL, etc.
        (cl:defparameter ,global-name ,form)
        (cl:define-symbol-macro ,name ,global-name)
        ',name)))
