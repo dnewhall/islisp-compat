@@ -75,7 +75,7 @@ Not allowed:
 
 (defstruct (islisp-reader-options (:conc-name reader-options-))
   "Structure to hold all the options used by the reader."
-  (eos-error-p t)
+  (eos-error-p nil)
   (eos-value nil)
   (neutral-alphabetic-case :upcase :type keyword) ; one of: upcase, :downcase
   (package (find-package "ISLISP-USER") :type package)
@@ -284,17 +284,34 @@ Whitespace is defined as space, tab, newline, and return."
 (defun read-list (stream options)
 "Read a list from the stream. Is called after (."
   (skip-whitespace stream options)
-  (do ((list '()))
+  (do ((list '())
+       (dot-seen-p nil)
+       (dot-value nil))
       ((if (interactive-stream-p stream)
            nil
            (not (listen stream)))
        (%reader-error options "End of stream before final ')'"))
     (skip-whitespace stream options)
-    (if (char= (peek-char nil stream) #\))
-        (progn
-          (read-char stream)
-          (return (nreverse list)))
-        (push (read-form stream options) list))))
+    (cond ((char= (peek-char nil stream) #\)) ; Closing )
+           (let ((result (nreverse list)))
+             (read-char stream)
+             ;; Handle any dotted list value.
+             (when dot-seen-p
+               (setf (cdr (last list)) dot-value))
+             (return result)))
+          ((char= (peek-char nil stream) #\.) ; Dotted pair/list
+           (read-char stream)
+           (if dot-seen-p
+               (%reader-error options "Duplicate . in dotted list.")
+               (progn
+                 (setq dot-seen-p t)
+                 (setq dot-value (read-form stream options)))))
+          (t ; Anything else
+           ;; If we have already handled dotted pair/list, too many
+           ;; objects follow.
+           (if dot-seen-p
+               (%reader-error options "Too many objects follow . in list.")
+               (push (read-form stream options) list))))))
 
 (defun read-vector (stream options)
   "Read a vector from the stream. Is called after #(."
@@ -763,7 +780,7 @@ Is called after # (but we know a + or - follows)."
     (read-form stream options)))
 
 (defun islisp-read-from-string (string &optional (eos-error-p t)
-                                       (eos-value nil))
+                                                 (eos-value nil))
   "Utility function that's like READ-FROM-STRING, but for the ISLisp reader."
   (let ((string-stream (make-string-input-stream string)))
     (islisp-read string-stream eos-error-p eos-value)))
