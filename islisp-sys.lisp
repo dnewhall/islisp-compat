@@ -461,7 +461,7 @@ Example: (islisp-sys:import 'cl:load 'cl:eval)"
                            (flatten *default-helper-functions*)
                            (flatten *standard-helper-functions*))))
                        (t
-                        (push sym symbol-list)))))
+                        (pushnew sym symbol-list)))))
         (flatten symbols)
         (setq symbol-list (nreverse symbol-list))
         ;; Import the actual symbols.
