@@ -540,10 +540,15 @@
                          (t (islisp-sys:signal-domain-error ,obj-gs (class ,class-name))))))))
 
       ((<symbol>) ;; FIXME: What if in another package?
-       (cond ((symbolp obj) `,obj)
+       (cond ((null obj) nil)
              ((stringp obj) `',(cl:intern obj))
              ((characterp obj) `',(cl:intern (cl:string obj)))
-             (t `(let ((,obj-gs ,obj))
+             ;; Special check for a quoted symbol
+             ((and (consp obj)
+                   (eq (car obj) 'quote)
+                   (consp (cdr obj))
+                   (symbolp (car (cdr obj)))) `',(car (cdr obj)))
+    (t `(let ((,obj-gs ,obj))
                    (cond ((funcall ,symbolp ,obj-gs) ,obj-gs)
                          ((funcall ,stringp ,obj-gs) (cl:intern ,obj-gs))
                          ((funcall ,characterp ,obj-gs) (cl:intern (cl:string ,obj-gs)))
