@@ -756,7 +756,14 @@
   ;; NOTE: There is not a specific class for an output-stream
   (if (not (output-stream-p output-stream))
       (islisp-sys:signal-domain-error output-stream (class <stream>))
-      (cl:princ float output-stream))
+      ;; Conform long and double floats to ISLisp syntax.
+      (let ((str (cl:make-string-output-stream)))
+        (cl:princ float str)
+        (setq str (cl:get-output-stream-string str))
+        (cl:dolist (float-type-char '(#\s #\f #\d #\l))
+          (let ((i (cl:position float-type-char str :test #'cl:char-equal)))
+            (if i
+                (cl:return (format output-stream (subseq str 0 i))))))))
   nil)
 
 (defun format-fresh-line (output-stream)
