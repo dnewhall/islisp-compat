@@ -759,11 +759,11 @@
       ;; Conform long and double floats to ISLisp syntax.
       (let ((str (cl:make-string-output-stream)))
         (cl:princ float str)
-        (setq str (cl:get-output-stream-string str))
+        (cl:setq str (cl:get-output-stream-string str))
         (cl:dolist (float-type-char '(#\s #\f #\d #\l))
           (let ((i (cl:position float-type-char str :test #'cl:char-equal)))
             (if i
-                (cl:return (format output-stream (subseq str 0 i))))))))
+                (cl:return (cl:write-string (subseq str 0 i) output-stream)))))))
   nil)
 
 (defun format-fresh-line (output-stream)
