@@ -524,19 +524,17 @@ Can error on incorrect types."
 (defun read-number (stream options)
   "Read an atom (symbol, integer, float) from the stream. Is called before any character is read. Can be used by itself."
   ;; [s]dddd[.dddd][e|E[s]dd]
-  (let* ((number (make-adjustable-string)))
-    ;; Get and handle first character
-    (let ((first-char (read-char stream nil nil)))
-      (if (or (digit-char-p first-char)
-              (char= first-char #\+)
-              (char= first-char #\-))
-          (push-char first-char number)
-          (error "Illegal number character ~A." first-char)))
+  (let* ((number (make-adjustable-string))
+         (first-char (read-char stream)))
+    ;; Handle first character
+    (if (or (digit-char-p first-char)
+            (char= first-char #\+)
+            (char= first-char #\-))
+        (push-char first-char number)
+        (error "Illegal number character ~A." first-char))
     ;; Handle additional characters
-    (do ((leading-sign-p nil)
-         (decimal-seen-p nil)
+    (do ((decimal-seen-p nil)
          (e-seen nil)
-         (e-sign-p nil)
          (symbolp nil)
          (char (peek-char nil stream nil nil)
                (peek-char nil stream nil nil)))
@@ -557,11 +555,11 @@ Can error on incorrect types."
       ;; it's non-terminating / going to be used.
       (read-char stream)
       ;; Increment e-seen if it's 0 (i.e. set last loop).
-      (if (eql e-seen 0)
-          (incf e-seen))
+      (when (eql e-seen 0)
+        (incf e-seen))
       ;; symbolp should only be set on last char of "1+" or "1-"
-      (if symbolp
-          (%reader-error options "Misplaced ~A in number." (char number (1- (length number)))))
+      (when symbolp
+        (%reader-error options "Misplaced ~A in number." (char number (1- (length number)))))
       ;; Check the character
       (cond ((digit-char-p char)
              (push-char char number))
